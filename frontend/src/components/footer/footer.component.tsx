@@ -12,16 +12,16 @@ const FooterComponent = () => {
             <a
               href="#"
               onClick={(e) => {
-                      e.preventDefault();
+                e.preventDefault();
 
-                       window.scrollTo({
-                       top: 0,
-                       behavior: "smooth",
-                         });
-               }}
-           >
-            <img className="h-16" src={logo} alt="AIStoriesBook" />
-             </a>
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
+              }}
+            >
+              <img className="h-16" src={logo} alt="AIStoriesBook" />
+            </a>
             <p className="mt-4 text-sm text-gray-400">
               Empowering voices through the art of writing. Connect, create,
               and inspire.
@@ -35,30 +35,30 @@ const FooterComponent = () => {
 
             <ul className="mt-4 space-y-4">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/about-us"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   About Us
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/career"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Careers
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/contact-us"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -70,21 +70,21 @@ const FooterComponent = () => {
 
             <ul className="mt-4 space-y-4">
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/blog"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Blog
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/help-center"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Help Center
-                </a>
+                </Link>
               </li>
 
               <li>
@@ -97,12 +97,12 @@ const FooterComponent = () => {
               </li>
 
               <li>
-                <a
-                  href="#"
+                <Link
+                  to="/guidelines"
                   className="text-base text-gray-400 hover:text-white transition-colors duration-200"
                 >
                   Guidelines
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -140,7 +140,37 @@ const FooterComponent = () => {
           <p className="text-base text-gray-400">
             &copy; 2025 StorySpark.AI - All rights reserved.
           </p>
- </div>
+
+          <div className="flex space-x-6">
+            <a
+              href="#"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <i className="fab fa-twitter"></i>
+            </a>
+
+            <a
+              href="#"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <i className="fab fa-facebook"></i>
+            </a>
+
+            <a
+              href="#"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <i className="fab fa-instagram"></i>
+            </a>
+
+            <a
+              href="https://github.com/ronisarkarexe"
+              className="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <i className="fab fa-github"></i>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

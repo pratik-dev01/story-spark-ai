@@ -50,8 +50,8 @@ const NavListComponent: React.FC = () => {
   }, [close]);
 
   return (
-    <div className="fixed top-0 left-0 z-50 w-full backdrop-blur-md bg-[#0f172a]/80 border-b border-white/10 transition-all duration-300 shadow-lg shadow-black/20">
-      <div className="relative mx-auto max-w-8xl px-5 py-4">
+    <header className="sticky top-0 z-50 w-full bg-[#0B1120]/80 backdrop-blur-md border-b border-white/10">
+      <div className="relative z-10 mx-auto max-w-8xl px-5 py-4">
         <div className="flex items-center justify-between">
         <div className="flex items-center space-x-8">
           <Link to="/">
@@ -148,7 +148,7 @@ const NavListComponent: React.FC = () => {
         </div>
       )}
       </div>
-    </div>
+    </header>
   );
 };
 

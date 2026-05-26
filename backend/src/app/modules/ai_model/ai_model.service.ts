@@ -63,11 +63,15 @@ const aiModelGenerate = async (payload: IAIModel, token: ITokenPayload) => {
     }
     return result;
   } catch (error) {
-    // Rollback quota
-    await User.updateOne(
-      { email: email, requestsThisMonth: { $gt: 0 } },
-      { $inc: { requestsThisMonth: -1 } }
-    );
+    // Rollback quota safely
+    try {
+      await User.updateOne(
+        { email: email, requestsThisMonth: { $gt: 0 } },
+        { $inc: { requestsThisMonth: -1 } }
+      );
+    } catch (rollbackError) {
+      console.error("Quota rollback failed:", rollbackError);
+    }
     if (error instanceof ApiError) {
       throw error;
     }
@@ -155,11 +159,15 @@ const aiModelAlternateEndings = async (
     }
     return result;
   } catch (error) {
-    // Rollback quota
-    await User.updateOne(
-      { email: email, requestsThisMonth: { $gt: 0 } },
-      { $inc: { requestsThisMonth: -1 } }
-    );
+    // Rollback quota safely
+    try {
+      await User.updateOne(
+        { email: email, requestsThisMonth: { $gt: 0 } },
+        { $inc: { requestsThisMonth: -1 } }
+      );
+    } catch (rollbackError) {
+      console.error("Quota rollback failed:", rollbackError);
+    }
     if (error instanceof ApiError) {
       throw error;
     }

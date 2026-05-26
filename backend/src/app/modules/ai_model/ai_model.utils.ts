@@ -60,7 +60,13 @@ export async function generateWithGeminiStories(
         Return the output as a JSON array.`
     );
     const text = response.response.text();
-    const stories: Story[] = JSON.parse(text);
+    const stories = JSON.parse(text);
+    if (!Array.isArray(stories)) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Invalid AI response format"
+      );
+    }
     const imagePromises = stories.map((story) => fetchImageURL(story.tag));
     const imageResults = await Promise.all(imagePromises);
     return stories.map((story, index) => ({
@@ -108,7 +114,14 @@ export async function generateAlternateEndingsWithGemini(
       Return the output as a JSON array of objects with the fields: "style", "ending", and "fullStory".`
     );
     const text = response.response.text();
-    return JSON.parse(text);
+    const parsed = JSON.parse(text);
+    if (!Array.isArray(parsed)) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "Invalid AI response format"
+      );
+    }
+    return parsed;
   } catch (error: any) {
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,

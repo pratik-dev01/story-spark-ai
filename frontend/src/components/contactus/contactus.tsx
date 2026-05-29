@@ -154,7 +154,7 @@ export default function Contact() {
         </div>
 
         {/* Form Container */}
-        <div className="w-full max-w-lg group relative">
+        <div className="w-full max-w-lg mx-auto group relative">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-[1.5rem] blur opacity-10 group-hover:opacity-15 transition duration-1000"></div>
 
           <form
@@ -162,6 +162,7 @@ export default function Contact() {
             className="
             w-full
             max-w-4xl
+            mx-auto
             bg-gray-100/80
             border
             border-gray-200

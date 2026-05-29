@@ -27,7 +27,10 @@ const toggleReaction = async (
     type: type,
   });
 
-  return newReaction;
+  return {
+    message: "Reaction toggled successfully",
+    likesCount: post.likesCount || 0,
+  };
 };
 
 export const ReactionService = {

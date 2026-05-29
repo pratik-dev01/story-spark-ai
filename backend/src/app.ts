@@ -40,8 +40,8 @@ app.use(
   })
 );
 app.use("/review", storyRoutes);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Keeps your extended payload parsing enabled
+app.use(express.json({ limit: "10kb" }));
+app.use(express.urlencoded({ extended: true, limit: "10kb" })); // Keeps your extended payload parsing enabled
 app.use(cookieParser());
 
 // Routes

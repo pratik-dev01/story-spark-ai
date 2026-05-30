@@ -103,11 +103,16 @@ cd backend
 npm test
 ```
 
-Run Python/ML tests (if present):
+Run Python/ML tests (if present). From the repository root run:
+
+```bash
+pytest backend/ml/tests
+```
+Or, if you prefer to change directory first:
 
 ```bash
 cd backend
-pytest backend/ml/tests
+pytest ml/tests
 ```
 
 Run linters and formatters as defined in project manifests (for example `npm run lint`).
@@ -116,9 +121,13 @@ Convenience: start both services
 --------------------------------
 If you frequently run both services together, you may add a local `dev:all` script to the root `package.json`. Example:
 
+Add the following `dev:all` script to your root `package.json` (inside the existing `scripts` section). Example full object shown below:
+
 ```json
-"scripts": {
-  "dev:all": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\""
+{
+  "scripts": {
+    "dev:all": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\""
+  }
 }
 ```
 

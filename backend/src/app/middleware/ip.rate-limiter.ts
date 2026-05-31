@@ -93,4 +93,13 @@ export const resetPasswordRateLimiter = createRateLimiter({
   actionLabel: "password reset",
 });
 
+/** Payment: 20 attempts per 15 minutes, 15-minute block */
+export const paymentRateLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,  // 15 minutes
+  maxRequests: 20,
+  blockTimeMs: 15 * 60 * 1000, // 15 minutes
+  keyPrefix: "payment",
+  actionLabel: "payment",
+});
+
 export default ipRateLimiter;

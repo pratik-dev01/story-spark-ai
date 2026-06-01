@@ -395,6 +395,8 @@ const TonePicker: React.FC<TonePickerProps> = ({ selected, onChange }) => {
 // Main StoriesComponent
 // ---------------------------------------------------------------------------
 const StoriesComponent = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+const storiesPerPage = 10;
   const location = useLocation();
   const navigate = useNavigate();
   const { register, handleSubmit, reset, setValue } = useForm<Inputs>();
@@ -439,6 +441,20 @@ const StoriesComponent = () => {
       }
     });
   }, [stories, searchQuery, searchFilter]);
+  const indexOfLastStory = currentPage * storiesPerPage;
+const indexOfFirstStory = indexOfLastStory - storiesPerPage;
+
+const currentStories = filteredStories.slice(
+  indexOfFirstStory,
+  indexOfLastStory
+);
+
+const totalPages = Math.ceil(
+  filteredStories.length / storiesPerPage
+);
+useEffect(() => {
+  setCurrentPage(1);
+}, [searchQuery, searchFilter]);
 
   const { data } = useGetProfileInfoQuery(undefined);
   const userRole = getUserInfo();
@@ -1233,7 +1249,7 @@ useEffect(() => {
       )}
 
       <StoriesViewComponent
-        stories={filteredStories}
+        stories={currentStories}
         isLogin={login}
         setStories={setStories}
         onPublishSuccess={handlePublishSuccess}
@@ -1273,10 +1289,33 @@ useEffect(() => {
           </div>
         </div>
       )}
-
+     
       <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
 };
+{totalPages > 1 && (
+  <div className="flex justify-center items-center gap-4 mt-6">
+    <button
+      onClick={() => setCurrentPage((p) => p - 1)}
+      disabled={currentPage === 1}
+      className="px-4 py-2 rounded bg-slate-700 text-white disabled:opacity-50"
+    >
+      Previous
+    </button>
+
+    <span>
+      Page {currentPage} of {totalPages}
+    </span>
+
+    <button
+      onClick={() => setCurrentPage((p) => p + 1)}
+      disabled={currentPage === totalPages}
+      className="px-4 py-2 rounded bg-slate-700 text-white disabled:opacity-50"
+    >
+      Next
+    </button>
+  </div>
+)}
 
 export default StoriesComponent;

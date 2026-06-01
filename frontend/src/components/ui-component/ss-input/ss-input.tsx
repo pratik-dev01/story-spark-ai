@@ -55,27 +55,17 @@ const SSInput = <T extends FieldValues>({
           </span>
         )}
 
-       <input
-  type={inputType}
-  id={name}
-  className={`w-full box-border pl-8 pr-10 py-1.5 text-base text-gray-900 dark:text-gray-200 bg-white dark:bg-slate-800 border-0 sm:text-sm ${
-    error
-      ? "outline-red-500"
-      : "outline-gray-800 focus:outline-indigo-600"
-  }`}
-  placeholder={placeholder}
-  autoComplete={autoComplete}
-  {...register(name, validation)}
-/>
-
         <input
           type={inputType}
           id={name}
-          className={`block w-80 max-w-full box-border pl-8 py-1.5 text-base text-gray-900 dark:text-gray-200 bg-white dark:bg-slate-800 border rounded-md sm:text-sm ${
-    error
-      ? "border-red-500 outline-red-500"
-      : "border-gray-300 outline-gray-300 focus:outline-indigo-600"
-  }`} 
+          autoFocus={autoFocus}
+          className={`block w-full min-w-0 box-border rounded-md border py-1.5 text-base sm:text-sm text-gray-900 dark:text-gray-200 bg-white dark:bg-slate-800 ${
+            icon ? "pl-10" : "pl-3"
+          } ${type === "password" ? "pr-10" : "pr-3"} ${
+            error
+              ? "border-red-500 outline-red-500"
+              : "border-gray-300 dark:border-gray-600 outline-gray-300 focus:border-indigo-600 focus:outline-indigo-600"
+          }`}
           placeholder={placeholder}
           autoComplete={autoComplete}
           {...register(name, validation)}

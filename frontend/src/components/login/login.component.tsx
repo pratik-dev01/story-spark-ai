@@ -13,6 +13,8 @@ import RedirectComponent from "../redirect.component";
 import toast, { Toaster } from "react-hot-toast";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { WandSparkles, BookOpen, UsersRound } from "lucide-react";
+import SSInput from "../ui-component/ss-input/ss-input";
+import SSButton from "../ui-component/ss-button/ss-button";
 
 
 
@@ -30,6 +32,7 @@ const LoginComponent = () => {
   const {
     register,
     handleSubmit,
+    formState: { errors },
   } = useForm<Inputs>({ mode: "onChange" });
 
   const [isBusy, setIsBusy] = useState<boolean>(false);
@@ -103,16 +106,16 @@ const LoginComponent = () => {
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="flex w-full max-w-md flex-col justify-center py-12 relative z-10 box-border">
+      <div className="flex w-full max-w-6xl flex-col justify-center py-12 relative z-10 box-border">
 
-        <div className="sm:mx-auto sm:w-full sm:max-w-md mb-8">
+        <div className="sm:mx-auto sm:w-full mb-8">
           <h2 className="text-center text-4xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400 drop-shadow-sm">
             STORY SPARK AI
           </h2>
         </div>
-        <div className="flex justify-center items-center gap-40">
+        <div className="flex flex-col lg:flex-row justify-center items-center gap-8 lg:gap-16 xl:gap-24 w-full">
 
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 w-full max-w-lg">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-700 bg-clip-text text-transparent">
             
             Turns Ideas into
@@ -167,7 +170,7 @@ const LoginComponent = () => {
         </div>
 
 
-        <div className="w-full max-w-md bg-slate-50 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700/50 rounded-2xl p-8 sm:p-10 shadow-2xl overflow-hidden">
+        <div className="relative w-full max-w-md shrink-0 bg-slate-50 dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700/50 rounded-2xl p-8 sm:p-10 shadow-2xl overflow-hidden">
 
           <img
             src="src/assets/login.jpg"
@@ -175,65 +178,57 @@ const LoginComponent = () => {
             className="absolute inset-0 w-full h-full object-cover"
           />
 
+          <div className="absolute inset-0 bg-black/60" />
+
+          <div className="relative z-10">
             <button
-            onClick={() => window.location.href = "/"}
-            className="mb-4 text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200 flex items-center gap-2"
+              type="button"
+              onClick={() => (window.location.href = "/")}
+              className="mb-4 text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200 flex items-center gap-2"
             >
-            ← Back to Home
-          </button>
+              ← Back to Home
+            </button>
 
+            <h2 className="text-center text-3xl font-bold text-white mb-6">
+              Welcome Back
+            </h2>
 
-          <div className="absolute inset-0 bg-black/60"></div>
-
-          <form
-            className="space-y-5 w-full"
-            onSubmit={handleSubmit(onSubmit)}
-            >
-
-          {/* Added w-full to the form */}
-
-          <form className="space-y-5 w-full" onSubmit={handleSubmit(onSubmit)}>
-            <SSInput
-              label="Email address"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              required={true}
-              icon="fi fi-rr-envelope"
-              register={register}
-              validation={{ required: "Email is required" }}
-              error={errors.email}
+            <form className="space-y-5 w-full" onSubmit={handleSubmit(onSubmit)}>
+              <SSInput
+                label="Email address"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                required={true}
+                icon="fi fi-rr-envelope"
+                register={register}
+                validation={{ required: "Email is required" }}
+                error={errors.email}
               />
 
-            <SSInput
-              label="Password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              required={true}
-              icon="fi fi-rr-lock"
-              register={register}
-              validation={{ required: "Password is required" }}
-              error={errors.password}
+              <SSInput
+                label="Password"
+                name="password"
+                type="password"
+                placeholder="Enter your password"
+                required={true}
+                icon="fi fi-rr-lock"
+                register={register}
+                validation={{ required: "Password is required" }}
+                error={errors.password}
               />
 
-            <div className="flex justify-end -mt-2">
-              <a
-                href="/forgot-password"
-                className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-200"
+              <div className="flex justify-end -mt-2">
+                <a
+                  href="/forgot-password"
+                  className="text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-200"
                 >
-                Forgot Password?
-              </a>
-            </div>
+                  Forgot Password?
+                </a>
+              </div>
 
-            <SSButton
-              text="Sign In"
-              type="submit"
-              isLoading={isBusy}
-              />
-
-            <SSButton text="Sign In" type="submit" isLoading={isBusy} />
-          </form>
+              <SSButton text="Sign In" type="submit" isLoading={isBusy} />
+            </form>
 
           <div className="mt-6 relative w-full">
             <div className="absolute inset-0 flex items-center w-full">
@@ -263,20 +258,17 @@ const LoginComponent = () => {
             <a
               href="/signup"
               className="font-semibold text-blue-400 hover:text-blue-300 transition-colors duration-200"
-              >
+            >
               Sign up for free
             </a>
           </p>
+          </div>
         </div>
       </div>
+      </div>
 
-      <Toaster
-        position="top-right"
-        reverseOrder={false}
-        />
-
+      <Toaster position="top-right" reverseOrder={false} />
     </div>
-        </div>
   );
 };
 

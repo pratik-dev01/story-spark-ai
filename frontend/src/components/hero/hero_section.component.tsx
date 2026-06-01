@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, useCallback, type MouseEvent, type ReactNode } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 
@@ -54,42 +54,49 @@ const FeatureCard = ({ feature }: { feature: Feature }) => {
     const card = cardRef.current;
     if (!card) return;
 
+    let rafId: number | null = null;
+
     const handleMouseMove = (e: globalThis.MouseEvent) => {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
+      if (rafId !== null) return; // skip if frame pending
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
 
-      // Parallax effect on inner content
-      gsap.to(contentRef.current, {
-        x: x * 0.15,
-        y: y * 0.15,
-        ease: "power2.out",
-        duration: 0.3
-      });
+        // Parallax effect on inner content
+        gsap.to(contentRef.current, {
+          x: x * 0.15,
+          y: y * 0.15,
+          ease: "power2.out",
+          duration: 0.3,
+        });
 
-      // Slight 3D tilt on the card itself
-      gsap.to(card, {
-        rotateY: (x / rect.width) * 15,
-        rotateX: -(y / rect.height) * 15,
-        transformPerspective: 1000,
-        ease: "power2.out",
-        duration: 0.3
+        // Slight 3D tilt on the card itself
+        gsap.to(card, {
+          rotateY: (x / rect.width) * 15,
+          rotateX: -(y / rect.height) * 15,
+          transformPerspective: 1000,
+          ease: "power2.out",
+          duration: 0.3,
+        });
       });
     };
 
     const handleMouseLeave = () => {
+      if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
       gsap.to(contentRef.current, {
         x: 0,
         y: 0,
         ease: "power2.out",
-        duration: 0.7
+        duration: 0.7,
       });
 
       gsap.to(card, {
         rotateY: 0,
         rotateX: 0,
         ease: "power2.out",
-        duration: 0.7
+        duration: 0.7,
       });
     };
 
@@ -97,6 +104,7 @@ const FeatureCard = ({ feature }: { feature: Feature }) => {
     card.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
+      if (rafId !== null) cancelAnimationFrame(rafId);
       card.removeEventListener("mousemove", handleMouseMove);
       card.removeEventListener("mouseleave", handleMouseLeave);
     };
@@ -143,6 +151,7 @@ const PARTICLE_CONFIG = [
 
 const HeroParticles = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const tweensRef = useRef<gsap.core.Tween[]>([]);
 
   useGSAP(() => {
     const container = containerRef.current;
@@ -151,7 +160,7 @@ const HeroParticles = () => {
     const particles = container.querySelectorAll(".gsap-particle");
     particles.forEach((particle, i) => {
       const config = PARTICLE_CONFIG[i];
-      gsap.to(particle, {
+      const tween = gsap.to(particle, {
         x: config.xMove,
         y: config.yMove,
         scale: 1.4,
@@ -162,7 +171,27 @@ const HeroParticles = () => {
         repeat: -1,
         delay: i * 0.3,
       });
+      tweensRef.current.push(tween);
     });
+
+    // Pause animations when hero is scrolled off-screen (saves CPU)
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          tweensRef.current.forEach((t) => t.play());
+        } else {
+          tweensRef.current.forEach((t) => t.pause());
+        }
+      },
+      { threshold: 0.05 },
+    );
+    if (container) observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+      tweensRef.current.forEach((t) => t.kill());
+      tweensRef.current = [];
+    };
   }, { scope: containerRef });
 
   return (
@@ -194,67 +223,76 @@ const HeroSectionComponent = () => {
   const starTimers = useRef<number[]>([]);
   const badgeRef = useRef<HTMLDivElement>(null);
 
-  // GSAP badge float + glow + animated border
+  // GSAP badge: merge all 3 tweens into a single timeline (less overhead)
   useGSAP(() => {
     const badge = badgeRef.current;
     if (!badge) return;
 
-    // Side-to-side motion
-    gsap.fromTo(badge,
-      { x: -10 },
-      {
-        x: 10,
-        duration: 2,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-      }
-    );
+    const tl = gsap.timeline({ repeat: -1 });
 
-    // Glowing box-shadow
+    // Floating side-to-side
     gsap.to(badge, {
-      boxShadow: "0 0 16px rgba(59, 130, 246, 0.45), 0 0 40px rgba(139, 92, 246, 0.2)",
-      duration: 1.2,
+      x: 10,
+      duration: 2,
       ease: "sine.inOut",
       yoyo: true,
       repeat: -1,
     });
 
-    // Color-changing moving border effect
-    gsap.to(badge, {
-      borderColor: "rgba(244, 114, 182, 0.8)", // Pink
+    // Color-cycling border + glow in one tween
+    tl.to(badge, {
       duration: 1,
-      repeat: -1,
-      yoyo: true,
+      borderColor: "rgba(167, 139, 250, 0.8)",
+      boxShadow: "0 0 16px rgba(139,92,246,0.45), 0 0 40px rgba(139,92,246,0.2)",
       ease: "none",
-      keyframes: {
-        "0%": { borderColor: "rgba(59, 130, 246, 0.8)" },  // Blue
-        "25%": { borderColor: "rgba(167, 139, 250, 0.8)" }, // Purple
-        "50%": { borderColor: "rgba(244, 114, 182, 0.8)" }, // Pink
-        "75%": { borderColor: "rgba(52, 211, 153, 0.8)" },  // Emerald
-        "100%": { borderColor: "rgba(59, 130, 246, 0.8)" }  // Blue
-      }
+    })
+    .to(badge, {
+      duration: 1,
+      borderColor: "rgba(244, 114, 182, 0.8)",
+      boxShadow: "0 0 16px rgba(244,114,182,0.45), 0 0 40px rgba(244,114,182,0.2)",
+      ease: "none",
+    })
+    .to(badge, {
+      duration: 1,
+      borderColor: "rgba(52, 211, 153, 0.8)",
+      boxShadow: "0 0 8px rgba(52,211,153,0.3), 0 0 20px rgba(52,211,153,0.1)",
+      ease: "none",
+    })
+    .to(badge, {
+      duration: 1,
+      borderColor: "rgba(59, 130, 246, 0.8)",
+      boxShadow: "0 0 16px rgba(59,130,246,0.45), 0 0 40px rgba(139,92,246,0.2)",
+      ease: "none",
     });
   });
 
-  const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    const id = nextStarId.current++;
-    const size = 8 + Math.floor(Math.random() * 8);
+  // Throttled star cursor: only updates state at max 30fps via rAF flag
+  const rafPendingRef = useRef(false);
+  const handleMouseMove = useCallback((event: MouseEvent<HTMLDivElement>) => {
+    if (rafPendingRef.current) return; // skip if a frame is already pending
+    rafPendingRef.current = true;
+    requestAnimationFrame(() => {
+      rafPendingRef.current = false;
+      const rect = event.currentTarget?.getBoundingClientRect();
+      if (!rect) return;
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const id = nextStarId.current++;
+      const size = 8 + Math.floor(Math.random() * 8);
 
-    setStars((prev) => {
-      const next = [...prev, { id, x, y, size }];
-      return next.slice(-18);
+      setStars((prev) => {
+        // Cap at 8 stars max (was 18) to keep DOM lean
+        const next = [...prev, { id, x, y, size }];
+        return next.slice(-8);
+      });
+
+      const timerId = window.setTimeout(() => {
+        setStars((prev) => prev.filter((star) => star.id !== id));
+        starTimers.current = starTimers.current.filter((timer) => timer !== timerId);
+      }, 650);
+      starTimers.current.push(timerId);
     });
-
-    const timerId = window.setTimeout(() => {
-      setStars((prev) => prev.filter((star) => star.id !== id));
-      starTimers.current = starTimers.current.filter((timer) => timer !== timerId);
-    }, 650);
-    starTimers.current.push(timerId);
-  };
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -265,55 +303,150 @@ const HeroSectionComponent = () => {
 
   return (
     <div className="relative min-h-screen bg-white text-slate-900 dark:bg-slate-900 dark:text-slate-100 overflow-hidden font-sans transition-colors duration-300">
-      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-sky-200/55 dark:bg-blue-600/20 rounded-full blur-[120px] pointer-events-none -z-10 transition-colors duration-300" />
-      <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-fuchsia-200/45 dark:bg-purple-600/20 rounded-full blur-[120px] pointer-events-none -z-10 transition-colors duration-300" />
+      {/* ── Ambient mesh gradient background ─────────────────────────────── */}
+      <div className="absolute inset-0 -z-20 pointer-events-none">
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            top: "-15%", left: "-10%",
+            width: "55vw", height: "55vw",
+            background: "radial-gradient(ellipse, rgba(99,102,241,0.18) 0%, transparent 70%)",
+            animation: "float-slow 12s ease-in-out infinite",
+            filter: "blur(40px)",
+          }}
+        />
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            top: "30%", right: "-15%",
+            width: "45vw", height: "45vw",
+            background: "radial-gradient(ellipse, rgba(168,85,247,0.14) 0%, transparent 70%)",
+            animation: "float-slow 15s ease-in-out infinite reverse",
+            filter: "blur(50px)",
+          }}
+        />
+        <div
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            bottom: "0", left: "35%",
+            width: "40vw", height: "40vw",
+            background: "radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 70%)",
+            animation: "float-slow 10s ease-in-out infinite 2s",
+            filter: "blur(60px)",
+          }}
+        />
+      </div>
+
+      {/* Subtle grid overlay */}
+      <div
+        className="absolute inset-0 -z-10 pointer-events-none dark:opacity-100 opacity-0"
+        style={{
+          backgroundImage: "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
+          backgroundSize: "52px 52px",
+          maskImage: "radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 80%)",
+          WebkitMaskImage: "radial-gradient(ellipse 80% 60% at 50% 30%, black 20%, transparent 80%)",
+        }}
+        aria-hidden="true"
+      />
 
       <HeroParticles />
 
       <div className="relative overflow-hidden" onMouseMove={handleMouseMove}>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20 text-center">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 text-center">
+
+          {/* ── Live badge ──────────────────────────────────────────────── */}
           <div
             ref={badgeRef}
-            className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/80 dark:bg-slate-800/60 border border-blue-400/30 dark:border-blue-500/30 backdrop-blur-md mb-8 shadow-sm cursor-pointer transition-all duration-300"
+            className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/80 dark:bg-slate-800/70 border border-blue-400/40 dark:border-indigo-500/40 backdrop-blur-xl mb-10 shadow-lg shadow-blue-500/10 cursor-pointer transition-all duration-300"
           >
             <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 tracking-wide">StorySparkAI v2.0 is live</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-200 tracking-wide">
+              ✦ StorySparkAI v2.0 is live
+            </span>
+            <span className="hidden sm:flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50 dark:bg-indigo-500/15 px-2.5 py-1 rounded-full border border-indigo-200/50 dark:border-indigo-500/30">
+              NEW
+            </span>
           </div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-8 leading-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            Ignite Your Imagination With <br className="hidden sm:block" />
-            <span className="hero-gradient-text pb-2">
-              AI-Driven Storytelling
+          {/* ── Hero heading ─────────────────────────────────────────────── */}
+          <h1
+            className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-extrabold tracking-tight mb-6 leading-[1.05]"
+            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+          >
+            <span className="block text-slate-900 dark:text-white mb-1">Ignite Your</span>
+            <span className="hero-gradient-text pb-2 block">
+              Imagination
+            </span>
+            <span className="block text-slate-700 dark:text-slate-300 text-4xl sm:text-5xl lg:text-6xl font-bold mt-1">
+              with AI Storytelling
             </span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-10 transition-colors duration-300">
-            Create, edit, and generate engaging multiple story variations from a single prompt.
-            Perfect for writers, creators, and enthusiasts exploring the future of fiction.
+          {/* ── Subtitle ─────────────────────────────────────────────────── */}
+          <p className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-500 dark:text-slate-400 leading-relaxed mb-8 transition-colors duration-300">
+            Generate multiple story variations from a single prompt.
+            Remix, translate, collaborate — all powered by{" "}
+            <span className="text-indigo-600 dark:text-indigo-400 font-semibold">Google Gemini</span>.
           </p>
-          <div className="flex-grow flex flex-col items-center justify-center">
-            <div className="relative max-w-3xl w-full before:absolute before:inset-0 before:-z-10 before:bg-gradient-to-r before:from-purple-500/20 before:via-indigo-500/20 before:to-blue-500/20 before:blur-xl before:animate-pulse">
-              <div className="flex flex-wrap items-center justify-center gap-4">
-                <Link to="/stories">
-                  <button className="relative px-8 py-3.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold shadow-lg shadow-blue-500/25 dark:shadow-indigo-500/15 hover:shadow-xl hover:shadow-blue-500/30 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer">
-                    <i className="fa fa-wand-magic-sparkles"></i>
-                    <span>Get Started</span>
-                  </button>
-                </Link>
-                <Link to="/collab">
-                  <button className="relative px-8 py-3.5 rounded-xl bg-white/80 dark:bg-white/5 backdrop-blur-md border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-semibold shadow-md hover:bg-slate-50 dark:hover:bg-white/10 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer">
-                    <span>✍️</span>
-                    <span>Collab Mode</span>
-                  </button>
-                </Link>
+          {/* ── CTA Buttons ──────────────────────────────────────────────── */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-14">
+            <Link to="/stories">
+              <button className="group relative px-8 py-4 rounded-2xl font-bold text-white text-base overflow-hidden shadow-xl shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 flex items-center gap-2.5 cursor-pointer">
+                <span
+                  className="absolute inset-0 rounded-2xl"
+                  style={{
+                    background: "linear-gradient(135deg, #4f46e5, #7c3aed, #6366f1)",
+                    backgroundSize: "200% 200%",
+                    animation: "border-gradient 4s ease infinite",
+                  }}
+                />
+                <span className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12" />
+                <i className="fa fa-wand-magic-sparkles relative z-10" />
+                <span className="relative z-10">Start Writing Free</span>
+                <span className="relative z-10 text-indigo-200 group-hover:translate-x-0.5 transition-transform">→</span>
+              </button>
+            </Link>
+
+            <Link to="/collab">
+              <button className="px-8 py-4 rounded-2xl font-bold text-slate-700 dark:text-white text-base bg-white/90 dark:bg-white/8 backdrop-blur-xl border border-slate-200/80 dark:border-white/12 shadow-lg hover:bg-white dark:hover:bg-white/14 hover:border-indigo-300/60 dark:hover:border-indigo-400/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 flex items-center gap-2.5 cursor-pointer">
+                <span>✍️</span>
+                <span>Collab Room</span>
+              </button>
+            </Link>
+          </div>
+
+          {/* ── Stats Row ────────────────────────────────────────────────── */}
+          <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+            {[
+              { value: "50K+",  label: "Stories Generated" },
+              { value: "12",    label: "Languages" },
+              { value: "Free",  label: "To Get Started" },
+              { value: "5",     label: "AI Writing Modes" },
+            ].map((stat) => (
+              <div key={stat.label} className="flex flex-col items-center">
+                <span
+                  className="text-2xl sm:text-3xl font-extrabold"
+                  style={{
+                    background: "linear-gradient(135deg, #60a5fa, #a78bfa)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  {stat.value}
+                </span>
+                <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 font-medium mt-0.5">
+                  {stat.label}
+                </span>
               </div>
-            </div>
+            ))}
           </div>
         </div>
 
+        {/* Cursor stars */}
         <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
           <div className="hero-cursor-stars absolute inset-0" aria-hidden="true">
             {stars.map((star) => (
@@ -327,10 +460,11 @@ const HeroSectionComponent = () => {
         </div>
       </div>
 
+      {/* ── Feature Cards ─────────────────────────────────────────────────── */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-32">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <FeatureCard feature={feature} key={index} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {features.map((feature) => (
+            <FeatureCard feature={feature} key={feature.title} />
           ))}
         </div>
       </div>

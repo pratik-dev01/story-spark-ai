@@ -1,24 +1,44 @@
-@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Space+Grotesk:wght@300..700&display=swap");
+/* Google Fonts are loaded via <link> in index.html (non-blocking) */
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-custom: #3b82f6;
-  
+
+  /* ── Design tokens ────────────────────────────────────── */
+  --color-brand-from:   #6366f1;
+  --color-brand-to:     #a78bfa;
+  --color-surface-dark: rgba(15, 23, 42, 0.85);
+  --color-border-dim:   rgba(255, 255, 255, 0.08);
+
   @keyframes fade-in {
     from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-  
+
+  /* fadeInUp — used by stories-view (was injected per-render, now global) */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   @keyframes border-gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0%   { background-position: 0%   50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0%   50%; }
   }
-  
-  --animate-fade-in: fade-in 0.6s ease-out forwards;
-  --animate-border-gradient: border-gradient 3s ease infinite;
+
+  /* Shimmer for skeleton loading */
+  @keyframes shimmer {
+    0%   { background-position:  200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  --animate-fade-in:        fade-in    0.6s ease-out forwards;
+  --animate-border-gradient:border-gradient 3s ease infinite;
+  --animate-fade-in-up:     fadeInUp   0.6s ease-out forwards;
+  --animate-shimmer:        shimmer    1.8s ease-in-out infinite;
 }
 
 @utility gradient-bg {
@@ -36,7 +56,7 @@
     border-color 220ms ease,
     background-color 220ms ease,
     box-shadow 220ms ease;
-  will-change: transform;
+  /* will-change only when needed — don't set globally */
 }
 
 .motion-card:hover {
@@ -70,7 +90,7 @@
     background-color 180ms ease,
     border-color 180ms ease,
     color 180ms ease;
-  will-change: transform;
+  /* will-change set only on hover via :hover rule for GPU efficiency */
 }
 
 .motion-cta:hover {
@@ -115,7 +135,7 @@
   border-radius: 9999px;
   pointer-events: none;
   transform: translate3d(-120px, -120px, 0) translate(-50%, -50%);
-  will-change: transform;
+  /* will-change only while cursor moves — applied via JS */
 }
 
 .magic-cursor-dot {
@@ -654,6 +674,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ── Box sizing (once is enough) ── */
 *,
 *::before,
 *::after {
@@ -736,12 +757,11 @@ select:focus-visible {
 
 .story-chip:hover {
   transform: translateY(-1px);
+  /* Correct hover state — blue tint in dark, white in light */
   border-color: rgba(96, 165, 250, 0.38);
   background: rgba(59, 130, 246, 0.18);
   color: #dbeafe;
-  background-color: #ffffff;
-  color: #0f172a;
-  transition: background-color 300ms ease, color 300ms ease;
+  transition: background-color 300ms ease, color 300ms ease, border-color 300ms ease;
 }
 
 /* Firefox scrollbar support */
@@ -1278,48 +1298,6 @@ html, body {
   z-index: 2;
 }
 
-
-/* ─── Scroll-to-Top Button ─────────────────────────────── */
-.scroll-to-top-btn {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
-  color: #ffffff;
-  font-size: 1.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(12px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 9999;
-}
-
-.scroll-to-top-btn.visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-/* Mobile: slightly smaller and closer to edge */
-@media (max-width: 640px) {
-  .scroll-to-top-btn {
-    bottom: 1.25rem;
-    right: 1.25rem;
-    width: 42px;
-    height: 42px;
-    font-size: 1rem;
-  }
-}
-=======
 /* Navbar Container */
 .navbar {
   display: flex;
@@ -1404,4 +1382,3 @@ html, body {
     padding: 0.5rem 0;
   }
 }
-

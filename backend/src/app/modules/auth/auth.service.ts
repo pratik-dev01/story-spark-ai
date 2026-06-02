@@ -10,14 +10,13 @@ import logger from "../../../utils/logger.util";
 import config from "../../../config";
 import ApiError from "../../../errors/api_error";
 import { IUser } from "../user/user.interface";
+import { ENUM_USER_ROLE } from "../../../enums/user";
 import { USER_STATUS } from "../../../enums/user_status";
 import { SUBSCRIPTION_TYPE } from "../../../enums/subscription_type";
 import { OTPModel } from "../verify_email/otp.model";
 import { RefreshSession } from "./refresh_session.model";
 import { VerifyEmailService } from "../verify_email/verify_email.service";
 import { GamificationService } from "../gamification/gamification.service";
-import { USER_STATUS } from "../../../enums/user_status";
-import { SUBSCRIPTION_TYPE } from "../../../enums/subscription_type";
 
 const googleClient = new OAuth2Client(config.google_client_id);
 
@@ -33,6 +32,7 @@ const validateUserStatus = (status?: string) => {
 // Token claims; tokenVersion enables global session revocation.
 const buildClaims = (user: any) => ({
   _id: user._id,
+  userId: user._id,
   email: user.email,
   role: user.role,
   subscriptionType: user.subscriptionType,
@@ -235,17 +235,16 @@ const logout = async (token?: string) => {
   }
 };
 
-const googleLogin = async (payload: { token: string }) => {
-  try {
-    if (!config.google_client_id) {
-      throw new ApiError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        "Google OAuth not configured"
-      );
+const googleLogin = async (payload: { token?: string; credential?: string }) => {
+  try{
+    const rawToken = payload.token || payload.credential;
+    
+    if (!rawToken) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Google authentication token is missing");
     }
 
     const ticket = await googleClient.verifyIdToken({
-      idToken: payload.token,
+      idToken: rawToken,
       audience: config.google_client_id,
     });
 
@@ -265,6 +264,7 @@ const googleLogin = async (payload: { token: string }) => {
       const newUser: Partial<IUser> = {
         email: email as string,
         name: (googleName || email || "Google User").slice(0, 100),
+        role: ENUM_USER_ROLE.USER,
         status: USER_STATUS.ACTIVE,
         subscriptionType: SUBSCRIPTION_TYPE.FREE,
         profile: {

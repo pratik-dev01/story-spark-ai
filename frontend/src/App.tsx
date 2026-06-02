@@ -4,7 +4,6 @@ import { createBrowserRouter, Navigate, Outlet, RouterProvider } from "react-rou
 
 import { USER_ROLE } from "./constants/role";
 import { getUserInfo } from "./services/auth.service";
-
 import RootLayout from "./components/layout/root_layout.component";
 import DashboardLayout from "./components/dashboard/dashboard_layout.component";
 

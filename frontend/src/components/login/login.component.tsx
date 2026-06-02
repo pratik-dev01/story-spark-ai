@@ -72,14 +72,14 @@ const LoginComponent = () => {
         storeUserInfo({
           accessToken: res.data.accessToken,
         });
-
-        setIsLoggedIn(true);
+        setTimeout(() => {
+          setIsLoggedIn(true);
+        }, 1000); // this delay is done to ensure that the toast message is visible to the user
       }
     } catch {
       toast.error(
         "Failed to login with Google. Please try again."
       );
-    } finally {
       setIsBusy(false);
     }
   };
@@ -99,13 +99,16 @@ const LoginComponent = () => {
       userInfo?.role === USER_ROLE.SUPER_ADMIN;
 
     return (
+    <>
+      
       <RedirectComponent
-        defaultPath={
-          isDashboardUser
-            ? "/dashboard"
-            : "/explore"
-        }
-      />
+          defaultPath={
+            isDashboardUser
+              ? "/dashboard"
+              : "/explore"
+          }
+      /> 
+    </>
     );
   }
 

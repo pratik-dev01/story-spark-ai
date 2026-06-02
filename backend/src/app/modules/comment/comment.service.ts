@@ -123,19 +123,20 @@ const getCommentsByPostId = async (postId: string) => {
     };
 
     if (!commentDTO.parentCommentId) {
-  topLevelComments.push(commentDTO);
-} else {
-  const parentIdStr = commentDTO.parentCommentId.toString();
-  if (!replyMap.has(parentIdStr)) {
-    replyMap.set(parentIdStr, []);
+      topLevelComments.push(commentDTO);
+    } else {
+      const parentIdStr = commentDTO.parentCommentId.toString();
+      if (!replyMap.has(parentIdStr)) {
+        replyMap.set(parentIdStr, []);
+      }
+      replyMap.get(parentIdStr)!.push(commentDTO);
+    }
   }
-  replyMap.get(parentIdStr)!.push(commentDTO);
-}
+
   for (const comment of topLevelComments) {
     const idStr = comment._id.toString();
     const replies = replyMap.get(idStr) || [];
 
-    // Sort replies in ascending chronological order, avoiding new Date allocation where possible
     replies.sort((a, b) => {
       const timeA =
         a.createdAt instanceof Date
@@ -153,7 +154,6 @@ const getCommentsByPostId = async (postId: string) => {
 
   return { comments: topLevelComments, totalComments };
 };
-
 const toggleCommentLike = async (commentId: string, token: ITokenPayload) => {
   const { _id, email } = token;
   const user = _id ? await User.findById(_id) : await User.findOne({ email });

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { connectSocket, getSocketIo } from "../../socket/socket.oi";
+import { connectSocket } from "../../socket/socket.oi";
 import { getUserInfo, isLoggedIn } from "../../services/auth.service";
 
 interface CreateRoomResponse {
@@ -26,7 +26,6 @@ export default function CollabHome() {
       setIsCreating(true);
       setError("");
 
-      const socket = connectSocket();
       let socket = getSocketIo();
       if (!socket) {
         socket = connectSocket();

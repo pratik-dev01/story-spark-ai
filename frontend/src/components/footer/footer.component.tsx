@@ -266,9 +266,6 @@ const FooterComponent: React.FC = () => {
                   aria-hidden="true"
                 />
                 <input
-                  id="newsletter-email-footer"
-                  name="email"
-                  autoComplete="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-﻿import { useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { isLoggedIn, removeUserInfo } from "../../services/auth.service";

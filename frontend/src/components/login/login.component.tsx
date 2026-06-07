@@ -120,6 +120,7 @@ const LoginComponent = () => {
       />
 
 
+      <div className="flex w-full max-w-md flex-col justify-center py-6 relative z-10">
       <motion.div 
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}

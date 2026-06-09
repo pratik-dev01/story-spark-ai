@@ -12,24 +12,24 @@ import {
   ArrowUpRight,
   Zap,
 } from "lucide-react";
-
 import { instance as axios } from "../../helpers/axios/axiosInstance";
 import { getBaseUrl } from "../../helpers/config";
 import storybook from "../../assets/storybook.png";
 
-// ΓöÇΓöÇΓöÇ Types ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
 type FormData = {
   fullname: string;
   email: string;
   subject: string;
   message: string;
 };
-
 type FormField = keyof FormData;
 
-// ΓöÇΓöÇΓöÇ Constants ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-
+// ─────────────────────────────────────────────────────────────────────────────
+// Constants
+// ─────────────────────────────────────────────────────────────────────────────
 const INITIAL_FORM_DATA: FormData = {
   fullname: "",
   email: "",
@@ -67,34 +67,34 @@ const FORM_FIELDS: Array<{
   icon: React.ElementType;
   autoComplete: string;
 }> = [
-    {
-      id: "contact-fullname",
-      name: "fullname",
-      type: "text",
-      label: "Full Name",
-      placeholder: "Jane Smith",
-      icon: User,
-      autoComplete: "name",
-    },
-    {
-      id: "contact-email",
-      name: "email",
-      type: "email",
-      label: "Email Address",
-      placeholder: "jane@example.com",
-      icon: Mail,
-      autoComplete: "email",
-    },
-    {
-      id: "contact-subject",
-      name: "subject",
-      type: "text",
-      label: "Subject",
-      placeholder: "What's this about?",
-      icon: FileText,
-      autoComplete: "off",
-    },
-  ];
+  {
+    id: "contact-fullname",
+    name: "fullname",
+    type: "text",
+    label: "Full Name",
+    placeholder: "Jane Smith",
+    icon: User,
+    autoComplete: "name",
+  },
+  {
+    id: "contact-email",
+    name: "email",
+    type: "email",
+    label: "Email Address",
+    placeholder: "jane@example.com",
+    icon: Mail,
+    autoComplete: "email",
+  },
+  {
+    id: "contact-subject",
+    name: "subject",
+    type: "text",
+    label: "Subject",
+    placeholder: "What's this about?",
+    icon: FileText,
+    autoComplete: "off",
+  },
+];
 
 const STATS = [
   { value: "24h", label: "Response time" },
@@ -102,8 +102,9 @@ const STATS = [
   { value: "Open", label: "Source project" },
 ] as const;
 
-// ΓöÇΓöÇΓöÇ FloatingLabelInput ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-
+// ─────────────────────────────────────────────────────────────────────────────
+// FloatingLabelInput
+// ─────────────────────────────────────────────────────────────────────────────
 interface FloatingLabelInputProps {
   id: string;
   name: FormField;
@@ -131,7 +132,7 @@ const FloatingLabelInput = ({
   const isFloated = focused || value.length > 0;
 
   return (
-    <div className="contact-float-field group">
+    <div className="contact-float-field group pt-1">
       <div className="relative">
         {/* Icon */}
         <span
@@ -140,7 +141,6 @@ const FloatingLabelInput = ({
         >
           <Icon className="h-4 w-4" />
         </span>
-
         {/* Input */}
         <input
           id={id}
@@ -157,13 +157,13 @@ const FloatingLabelInput = ({
           aria-invalid={error}
           className={[
             "contact-float-input",
+            "py-3.5 pl-11 pr-4", // Added padding for better label/icon spacing
             isFloated ? "contact-float-input--active" : "",
             error ? "contact-float-input--error" : "",
           ]
             .filter(Boolean)
             .join(" ")}
         />
-
         {/* Floating label */}
         <label
           htmlFor={id}
@@ -171,7 +171,6 @@ const FloatingLabelInput = ({
         >
           {label}
         </label>
-
         {/* Animated focus underline */}
         <span className="contact-float-underline" aria-hidden="true" />
       </div>
@@ -179,8 +178,9 @@ const FloatingLabelInput = ({
   );
 };
 
-// ΓöÇΓöÇΓöÇ FloatingLabelTextarea ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-
+// ─────────────────────────────────────────────────────────────────────────────
+// FloatingLabelTextarea
+// ─────────────────────────────────────────────────────────────────────────────
 interface FloatingLabelTextareaProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
@@ -196,21 +196,21 @@ const FloatingLabelTextarea = ({
   const isFloated = focused || value.length > 0;
 
   return (
-    <div className="contact-float-field group">
+    <div className="contact-float-field group pt-1">
       <div className="relative">
         {/* Icon */}
         <span
-          className={`contact-float-icon contact-float-icon--textarea ${isFloated ? "contact-float-icon--active" : ""
-            }`}
+          className={`contact-float-icon contact-float-icon--textarea ${
+            isFloated ? "contact-float-icon--active" : ""
+          }`}
           aria-hidden="true"
         >
           <Pencil className="h-4 w-4" />
         </span>
-
         {/* Textarea */}
         <textarea
           id="contact-message"
-          rows={5}
+          rows={6} // Slightly increased for better usability
           name="message"
           value={value}
           onChange={onChange}
@@ -222,22 +222,22 @@ const FloatingLabelTextarea = ({
           aria-invalid={error}
           className={[
             "contact-float-input contact-float-textarea",
+            "py-3.5 pl-11 pr-4 resize-y min-h-[140px]", // Better padding + minimum height
             isFloated ? "contact-float-input--active" : "",
             error ? "contact-float-input--error" : "",
           ]
             .filter(Boolean)
             .join(" ")}
         />
-
         {/* Floating label */}
         <label
           htmlFor="contact-message"
-          className={`contact-float-label contact-float-label--textarea ${isFloated ? "contact-float-label--floated" : ""
-            }`}
+          className={`contact-float-label contact-float-label--textarea ${
+            isFloated ? "contact-float-label--floated" : ""
+          }`}
         >
           Message
         </label>
-
         {/* Animated focus underline */}
         <span className="contact-float-underline" aria-hidden="true" />
       </div>
@@ -245,12 +245,15 @@ const FloatingLabelTextarea = ({
   );
 };
 
-// ΓöÇΓöÇΓöÇ Main Contact component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
-
+// ─────────────────────────────────────────────────────────────────────────────
+// Main Contact component
+// ─────────────────────────────────────────────────────────────────────────────
 export default function Contact() {
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [error, setError] = useState<string>("");
-  const [fieldErrors, setFieldErrors] = useState<Partial<Record<FormField, boolean>>>({});
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<FormField, boolean>>
+  >({});
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -268,19 +271,20 @@ export default function Contact() {
           obs.disconnect();
         }
       },
-      { threshold: 0.08 }
+      { threshold: 0.08 },
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 
   const changeHandler = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const field = e.target.name as FormField;
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
     if (error) setError("");
-    if (fieldErrors[field]) setFieldErrors((prev) => ({ ...prev, [field]: false }));
+    if (fieldErrors[field])
+      setFieldErrors((prev) => ({ ...prev, [field]: false }));
   };
 
   const validateForm = (): boolean => {
@@ -291,7 +295,6 @@ export default function Contact() {
       message: formData.message.trim(),
     };
     const newFieldErrors: Partial<Record<FormField, boolean>> = {};
-
     if (!t.fullname) newFieldErrors.fullname = true;
     if (!t.email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(t.email))
       newFieldErrors.email = true;
@@ -337,7 +340,7 @@ export default function Contact() {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to send message. Please check your connection."
+          : "Failed to send message. Please check your connection.",
       );
     } finally {
       setLoading(false);
@@ -350,35 +353,41 @@ export default function Contact() {
       ref={sectionRef}
       id="contact"
       aria-labelledby="contact-heading"
-      className="contact-section relative overflow-hidden bg-[#020617] text-white"
+      className="contact-section relative overflow-hidden bg-[#020617] text-white pb-20" // Added bottom padding to prevent widget overlap
     >
-      {/* ΓöÇΓöÇ Layered background ΓöÇΓöÇ */}
+      {/* Layered background */}
       <div aria-hidden="true" className="contact-bg-mesh" />
       <div aria-hidden="true" className="contact-orb contact-orb-blue" />
       <div aria-hidden="true" className="contact-orb contact-orb-purple" />
       <div aria-hidden="true" className="contact-orb contact-orb-pink" />
       <div aria-hidden="true" className="contact-grid-overlay" />
 
-      {/* ΓöÇΓöÇ Page content ΓöÇΓöÇ */}
+      {/* Page content */}
       <div className="relative z-10 mx-auto w-full max-w-7xl px-5 py-14 sm:px-8 sm:py-18 lg:px-12 lg:py-20 xl:px-16">
-
         {/* Mobile badge */}
         <div className="mb-10 flex flex-col items-center text-center lg:hidden">
           <span
-            className={`contact-badge inline-flex items-center gap-1.5 rounded-full border border-blue-500/25 bg-blue-500/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-widest text-blue-300 transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              }`}
+            className={`contact-badge inline-flex items-center gap-1.5 rounded-full border border-blue-500/25 bg-blue-500/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-widest text-blue-300 transition-all duration-700 ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-4"
+            }`}
           >
             <Zap className="h-3 w-3" aria-hidden="true" />
             Get in Touch
           </span>
         </div>
 
-        <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-14 xl:gap-20">
-
-          {/* ΓöÇΓöÇ LEFT COLUMN ΓöÇΓöÇ */}
+        <div className="grid items-start gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-16 xl:gap-20">
+          {" "}
+          {/* Adjusted column ratio + gap for better balance */}
+          {/* LEFT COLUMN */}
           <div
-            className={`contact-col-left flex flex-col transition-all duration-700 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
+            className={`contact-col-left flex flex-col transition-all duration-700 ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
           >
             {/* Desktop badge */}
             <span className="contact-badge mb-6 hidden w-fit items-center gap-1.5 rounded-full border border-blue-500/25 bg-blue-500/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-widest text-blue-300 lg:inline-flex">
@@ -405,8 +414,8 @@ export default function Contact() {
 
             {/* Description */}
             <p className="mt-6 max-w-[38ch] text-[0.9375rem] leading-[1.8] text-slate-400 sm:text-base">
-              Have a story idea, a feature suggestion, or just want to say hello?
-              We read every message and respond within 24 hours.
+              Have a story idea, a feature suggestion, or just want to say
+              hello? We read every message and respond within 24 hours.
             </p>
 
             {/* Stats row */}
@@ -419,7 +428,9 @@ export default function Contact() {
                     transitionDelay: isVisible ? `${i * 80}ms` : "0ms",
                   }}
                 >
-                  <p className="text-lg font-black text-white sm:text-xl">{value}</p>
+                  <p className="text-lg font-black text-white sm:text-xl">
+                    {value}
+                  </p>
                   <p className="mt-0.5 text-[0.65rem] font-medium uppercase tracking-wider text-slate-500 sm:text-xs">
                     {label}
                   </p>
@@ -428,9 +439,20 @@ export default function Contact() {
             </div>
 
             {/* Contact channels */}
-            <ul className="mt-7 space-y-2.5 sm:mt-8" aria-label="Contact channels">
+            <ul
+              className="mt-7 space-y-2.5 sm:mt-8"
+              aria-label="Contact channels"
+            >
               {CONTACT_CHANNELS.map(
-                ({ icon: Icon, label, value, href, color, iconColor, hoverBorder }) => (
+                ({
+                  icon: Icon,
+                  label,
+                  value,
+                  href,
+                  color,
+                  iconColor,
+                  hoverBorder,
+                }) => (
                   <li key={label}>
                     <a
                       href={href}
@@ -458,34 +480,52 @@ export default function Contact() {
                       />
                     </a>
                   </li>
-                )
+                ),
               )}
             </ul>
 
-            {/* Illustration */}
-            <div
-              aria-hidden="true"
-              className="contact-illustration relative mt-10 hidden items-end lg:flex"
-            >
-              <div className="contact-illustration-glow" />
-              <img
-                src={storybook}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                className="relative z-10 w-full max-w-[340px] object-contain xl:max-w-[380px]"
-              />
+            {/* Enhanced illustration + contact info area to utilize space */}
+            <div className="mt-10 lg:mt-auto">
+              <div
+                aria-hidden="true"
+                className="contact-illustration relative hidden items-end lg:flex"
+              >
+                <div className="contact-illustration-glow" />
+                <img
+                  src={storybook}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  className="relative z-10 w-full max-w-[340px] object-contain xl:max-w-[380px]"
+                />
+              </div>
+
+              {/* Additional contact details to fill space and provide info */}
+              <div className="mt-8 hidden lg:block">
+                <p className="text-xs uppercase tracking-widest text-slate-500 mb-3">
+                  Direct Contact
+                </p>
+                <a
+                  href="mailto:ronichandrasarkar@gmail.com"
+                  className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
+                >
+                  <Mail className="h-4 w-4" /> ronichandrasarkar@gmail.com
+                </a>
+              </div>
             </div>
           </div>
-
-          {/* ΓöÇΓöÇ RIGHT COLUMN ΓÇö FORM ΓöÇΓöÇ */}
+          {/* RIGHT COLUMN — FORM */}
           <div
-            className={`contact-col-right w-full lg:sticky lg:top-24 transition-all duration-700 delay-150 ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
+            className={`contact-col-right w-full lg:sticky lg:top-24 transition-all duration-700 delay-150 ${
+              isVisible
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-8"
+            }`}
           >
-            <div className="contact-form-shell">
+            <div className="contact-form-shell max-w-[520px] mx-auto lg:mx-0">
+              {" "}
+              {/* Constrain form width */}
               <div aria-hidden="true" className="contact-form-glow-ring" />
-
               <div className="contact-form-card">
                 <div aria-hidden="true" className="contact-form-top-line" />
 
@@ -503,23 +543,25 @@ export default function Contact() {
                   onSubmit={submitHandler}
                   noValidate
                   aria-label="Contact form"
-                  className="space-y-5"
+                  className="space-y-6" // Increased spacing between fields
                 >
                   {/* Floating label text inputs */}
-                  {FORM_FIELDS.map(({ id, name, type, label, icon, autoComplete }) => (
-                    <FloatingLabelInput
-                      key={id}
-                      id={id}
-                      name={name}
-                      type={type}
-                      label={label}
-                      icon={icon}
-                      autoComplete={autoComplete}
-                      value={formData[name]}
-                      onChange={changeHandler}
-                      error={fieldErrors[name]}
-                    />
-                  ))}
+                  {FORM_FIELDS.map(
+                    ({ id, name, type, label, icon, autoComplete }) => (
+                      <FloatingLabelInput
+                        key={id}
+                        id={id}
+                        name={name}
+                        type={type}
+                        label={label}
+                        icon={icon}
+                        autoComplete={autoComplete}
+                        value={formData[name]}
+                        onChange={changeHandler}
+                        error={fieldErrors[name]}
+                      />
+                    ),
+                  )}
 
                   {/* Floating label textarea */}
                   <FloatingLabelTextarea
@@ -533,10 +575,13 @@ export default function Contact() {
                     type="submit"
                     disabled={loading}
                     aria-busy={loading}
-                    aria-label={loading ? "Sending messageΓÇª" : "Send message"}
-                    className="contact-submit-btn group relative mt-1 flex h-12 w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl text-sm font-bold text-white sm:h-[3.125rem] sm:text-base"
+                    aria-label={loading ? "Sending message…" : "Send message"}
+                    className="contact-submit-btn group relative mt-2 flex h-12 w-full items-center justify-center gap-2.5 overflow-hidden rounded-xl text-sm font-bold text-white sm:h-[3.125rem] sm:text-base focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]" // Added strong focus state
                   >
-                    <span aria-hidden="true" className="contact-btn-gradient absolute inset-0" />
+                    <span
+                      aria-hidden="true"
+                      className="contact-btn-gradient absolute inset-0"
+                    />
                     {/* Shimmer sweep on hover */}
                     <span
                       aria-hidden="true"
@@ -549,7 +594,7 @@ export default function Contact() {
                             aria-hidden="true"
                             className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white"
                           />
-                          <span>SendingΓÇª</span>
+                          <span>Sending…</span>
                         </>
                       ) : (
                         <>
@@ -575,7 +620,7 @@ export default function Contact() {
                         aria-hidden="true"
                       />
                       <p className="text-sm font-medium text-emerald-400">
-                        Message sent ΓÇö we'll get back to you within 24 hours.
+                        Message sent — we'll get back to you within 24 hours.
                       </p>
                     </div>
                   )}
@@ -591,7 +636,9 @@ export default function Contact() {
                         className="mt-0.5 h-4 w-4 shrink-0 text-red-400"
                         aria-hidden="true"
                       />
-                      <p className="text-sm font-medium text-red-400">{error}</p>
+                      <p className="text-sm font-medium text-red-400">
+                        {error}
+                      </p>
                     </div>
                   )}
                 </form>
